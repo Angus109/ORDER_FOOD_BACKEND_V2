@@ -1,0 +1,23 @@
+const express = require('express')
+const error = require("../Middleware/errorMiddleware")
+const items = require("../Routes/items")
+const user = require("../Routes/user")
+const location = require("../Routes/locations")
+const categories = require("../Routes/categories")
+const resturents = require("../Routes/resturents")
+const dishes = require("../Routes/dishes")
+const cart = require("../Routes/cart")
+const orders =  require("../Routes/order")
+
+module.exports = function name(app) {
+    app.use(express.json())
+    app.use(`/api/v1/items`, items)
+    app.use(`/api/v1/user`, user)
+    app.use(`/api/v1/locations`, location)
+    app.use(`/api/v1/categories`, categories)
+    app.use(`/api/resturents`, resturents)
+    app.use(`/api/v1/dishes`, dishes)
+    app.use(`/api/v1/cart`, cart)
+    app.use('/api/v1/orders', orders)
+    app.use(error)
+}
