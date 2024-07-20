@@ -19,7 +19,7 @@ const resturentSchema = new mongoose.Schema({
     image: {
         public_id: {
             type: String,
-            required : true
+            required: true
         },
         url: {
             type: String,
@@ -27,24 +27,24 @@ const resturentSchema = new mongoose.Schema({
         }
     },
     location: {
-        type : new mongoose.Schema({
+        type: new mongoose.Schema({
             address: String,
             city:
-         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Locations"
-        },
-        lat: Number,
-        lon: Number 
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Locations"
+            },
+            lat: Number,
+            lon: Number
         })
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now()
     },
     description: {
         type: String,
-        required : true
+        required: true
     }
 
 });
@@ -52,25 +52,34 @@ const resturentSchema = new mongoose.Schema({
 const Resturent = mongoose.model("Resturent", resturentSchema)
 
 const getresturents = async function (search) {
-    if(search){
+    if (search) {
         console.log(search)
-    const result = await Resturent.find().populate({
-        path: 'categories',
-        populate: {
-            path: 'category'
-        }
-    }).populate({
-        path: 'location',
-        populate: {
-            path: 'city'
-        }
-    })
-    return result
-    }else{
+        const response = await Resturent.find().populate({
+            path: 'categories',
+            populate: {
+                path: 'category'
+            }
+        }).populate({
+            path: 'location',
+            populate: {
+                path: 'city'
+            }
+        })
+        return {code: 200, result:{
+            success: true,
+            result: response
+        } }
+
+    } else {
         const response = await Resturent.find({})
-        return { code: 200, result: response } 
+        return {
+            code: 200, result: {
+                success: true,
+                result: response
+            }
+        }
     }
-    
+
 }
 
 const createresturents = async function (req, cloudinaryResponseForRestaurants) {
@@ -92,11 +101,21 @@ const createresturents = async function (req, cloudinaryResponseForRestaurants) 
                 lon: req.body.lon || ""
             },
             description: req.body.description
-          });
+        });
         const response = await resturent.save()
-        return { code: 200, result: response }
+        return {
+            code: 200, result: {
+                success: true,
+                result: response
+            }
+        }
     } catch (error) {
-        return { code: 400, result: error }
+        return {
+            code: 400, result: {
+                success: false,
+                error: error
+            }
+        }
     }
 }
 

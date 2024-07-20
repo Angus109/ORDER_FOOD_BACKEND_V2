@@ -68,11 +68,17 @@ const searchdishes = async function (search) {
     const result = await Dish.find(search).populate({
       path: 'categories',
     })
-    return {code:200, result : result}
+    return {code:200, result : {
+      success: true,
+      result: result
+    }}
 
   }else{
     const result = await Dish.find({})
-    return {code:200, result: result}
+    return {code:200, result: {
+      success: true,
+      result: result
+    }}
   }
 
 
@@ -87,25 +93,40 @@ const getdishes = async function (id) {
 
       // Validate restaurant ID (optional but recommended)
       if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
-        return { code: 400, result: 'Invalid restaurant ID' }
+        return { code: 400, result: {
+          success: false,
+          message:'Invalid restaurant ID'
+        } }
       }
 
       const dishes = await Dish.find({ parentId: restaurantId }); // Filter by parentId
 
       if (!dishes.length) {
-        return { code: 200, message: 'No dishes found for this restaurant' , result: []}
+        return { code: 200, result:{
+           success: false,
+            message: 'No dishes found for this restaurant'
+        }}
       }
 
-      return { code: 200, result: dishes }
+      return { code: 200, result: {
+        success: true,
+        result: dishes
+      } }
 
     } catch (error) {
       console.error(error);
-      return { code: 200, result: 'Error retrieving dishes' }
+      return { code: 200, result: {
+        success: false,
+        error: error
+      } }
 
     }
   } else {
     const response = await Dish.find({})
-    return { code: 200, result: response }
+    return { code: 200, result: {
+      success: true,
+      result: response
+    } }
   }
 
 
@@ -127,9 +148,15 @@ const createdishs = async function (req, cloudinaryResponseForDish) {
       parentId: req.body.parentId
     });
     const response = await dish.save()
-    return { code: 200, result: response }
+    return { code: 200, result: {
+      success: true,
+      result: response
+    } }
   } catch (error) {
-    return { code: 400, result: error }
+    return { code: 400, result: {
+      success: false,
+      error: error
+    } }
   }
 }
 
@@ -140,7 +167,10 @@ const updatedishes = async function (req) {
 
     // Validate dish ID (optional but recommended)
     if (!mongoose.Types.ObjectId.isValid(dishId)) {
-      return {code:200, message: 'Invalid dish ID' }
+      return {code:200, result:{
+        success: false,
+        message: 'Invalid dish ID'
+      } }
     }
 
     const updatedDish = await Dish.findOneAndUpdate(
@@ -150,13 +180,23 @@ const updatedishes = async function (req) {
     );
 
     if (!updatedDish) {
-      return {code:404, message: 'Dish not found'}
+      return {code:404, result:{
+        success: false,
+        message: 'Dish not found'
+      }}
     }
 
-    return {code:200, message: 'Dish updated successfully', result: updatedDish }
+    return {code:200,  result: {
+      success: true,
+      message: 'Dish updated successfully',
+      result: updatedDish
+    } }
   } catch (error) {
     console.error(error);
-    return {code:500, message: 'Error updating dish'}
+    return {code:500, result:{
+      success: false,
+      error: error
+    }}
   
   }
 };
@@ -166,23 +206,35 @@ const deletedishes = async function (id) {
   try {
     // Validate ID (optional but recommended)
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return {code:400, message: 'Invalid dish ID' }
+      return {code:400, result:{
+        success: false,
+        message: 'Invalid dish ID'
+      } }
     }
 
     const deletedDish = await Dish.findByIdAndDelete(id);
 
     if (!deletedDish) {
-      return {code:404, message: 'Dish not found'}
+      return {code:404, result:{
+        success: false,
+         message: 'Dish not found'
+      }}
     }
 
     // Handle dependent documents (optional)
     // If your dishes have dependent documents (e.g., orders), 
     // you might need additional logic here to handle them before deletion.
 
-    return {code:200, message: 'Dish deleted successfully' }
+    return {code:200, result:{
+      success: true,
+      message: 'Dish deleted successfully',
+      result: deletedDish
+    } }
   } catch (error) {
-    console.error(error);
-    return {code:500, message: 'Error deleting dish'}
+    return {code:500, result:{
+      success: false,
+      error: error
+    }}
   }
 };
 

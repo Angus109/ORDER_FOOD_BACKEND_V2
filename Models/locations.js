@@ -20,7 +20,10 @@ const Locations = mongoose.model("Locations", locationSchema)
 
 const getLocation = async function () {
     const result = await Locations.find({})
-    return result
+    return {code:200, result: {
+        success: true,
+        result: result
+    }}
 }
 
 const createlocations = async function (body) {
@@ -29,9 +32,15 @@ const createlocations = async function (body) {
     try {
         let location = new Locations(body); 
         const response = await location.save()
-        return {code: 200, result: response}
+        return {code: 200, result: {
+            success: true,
+            result: response
+        }}
     } catch (error) {
-        return {code: 400, result: error}
+        return {code: 400, result: {
+            success: false,
+            error: error
+        }}
     }
 }
 

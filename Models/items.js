@@ -15,9 +15,15 @@ const createItems = async function (body) {
     try {
         let item = new Items(body); 
         const response = await item.save()
-        return {code: 200, result: response}
+        return {code: 200, result: {
+            success: true,
+            result: response
+        }}
     } catch (error) {
-        return {code: 400, result: error}
+        return {code: 400, result: {
+            success: false,
+            error: error
+        }}
     }
 }
 

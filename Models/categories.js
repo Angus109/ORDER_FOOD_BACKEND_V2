@@ -26,7 +26,7 @@ const Categories = mongoose.model("Categories", categoriesSchema)
 
 const getcategoriess = async function () {
     const result = await Categories.find({})
-    return {code: 200, result: result}
+    return {code: 200, result: {sucess: true, result:result}}
 }
 
 
@@ -44,19 +44,22 @@ const deleteCategories = async function (_id) {
       const deletedCategory = await Categories.findByIdAndDelete(_id);
   
       if (!deletedCategory) {
-        return {code:400, result: "Category not found"}
+        return {code:400, result: {sucess:true, message:"category not found" }}
       }
   
       // Handle dependent documents (optional)
       // If your categories have dependent documents (e.g., products), 
       // you might need additional logic here to handle them before deletion.
   
-      return {code:200, message: 'Category deleted successfully'}
+      return {code:200, result:{success:true, message: 'Category deleted successfully'}}
      
 
     } catch (error) {
       console.error(error);
-      return {code:500 , message : 'Error deleting category'}
+      return {code:500 , result:{
+        success: false,
+        error: error
+      }}
        
     }
   };
@@ -73,9 +76,15 @@ const createcategoriess = async function (req, cloudinaryResponseForCategory) {
             }
         }); 
         const response = await categories.save()
-        return {code: 200, result: response}
+        return {code: 200, result: {
+          success: true,
+          result: response
+        }}
     } catch (error) {
-        return {code: 400, result: error}
+        return {code: 400, result: {
+          success : false,
+          error: error
+        }}
     }
 }
 
