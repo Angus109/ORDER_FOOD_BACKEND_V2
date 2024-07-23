@@ -23,10 +23,10 @@ router.post("/register", asyncMiddleware(async function (req, res) {
 router.post("/login", asyncMiddleware(async function (req, res) {
 
 
-    if (!req.body) return res.send({error:"email and password is required"})
+    if (!req.body) return res.status(400).send({error:"email and password is required"})
     const { email, password } = req.body
-    if (!email) return res.send({error: "email is a required field!"})
-    if (!password) return res.send({error: "password is required field!"})
+    if (!email) return res.status(400).send({error: "email is a required field!"})
+    if (!password) return res.status(400).send({error: "password is required field!"})
     const { code, result, token } = await loginUser(req.body)
     res.header("x-auth-token", token).status(code).send(result)
 }))
