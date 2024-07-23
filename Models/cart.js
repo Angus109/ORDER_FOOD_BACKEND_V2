@@ -78,7 +78,14 @@ const getcart = async function (id) {
   const result = await Cart.find().find({
     user: id,
   })
-  return result[0]
+  return {
+    code:200,
+    result:{
+      success:true,
+      result: result,
+      
+    }
+  }
 }
 
 const createCart = async function (body) {
@@ -102,7 +109,10 @@ const createCart = async function (body) {
 
     return { code: 200, result: response }
   } catch (error) {
-    return { code: 400, result: error }
+    return { code: 400, result: {
+      success:false,
+      error: error
+    }}
 
   }
 }
@@ -114,7 +124,12 @@ const removeCart = async function (req) {
 
     // Validate user ID and product ID (optional but recommended)
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(400).json({ message: 'Invalid user ID or product ID' });
+      return {code:200,
+        result:{
+          success:false,
+          error: error
+        }
+      }
     }
 
     const cart = await Cart.findOneAndUpdate(
@@ -124,17 +139,28 @@ const removeCart = async function (req) {
     );
 
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found for the user' });
+      return {code:404, result:{
+        success:false,
+        error:'Cart not found for the user'
+      }}
     }
 
     // Update subTotal after removing item (optional)
     cart.subTotal = cart.items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
     await cart.save(); // Persist the updated subTotal (if needed)
 
-    return res.status(200).json({ message: 'Item removed from cart successfully', cart }); // Send updated cart (optional)
+    return {code:200, result:{
+      success:true,
+      message: 'Item removed from cart successfully',
+      result: cart,
+      
+    }}
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error removing item from cart' });
+    return {code:400, result:{
+      success: false,
+      error: error
+    }}
   }
 };
 
@@ -147,7 +173,10 @@ const updateCart = async function (req) {
 
     // Validate user ID, product ID, and quantity (optional but recommended)
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId) || quantity < 0) {
-      return res.status(400).json({ message: 'Invalid user ID, product ID, or quantity' });
+      return {code:400, result:{
+        success: false,
+        error: 'Invalid user ID, product ID, or quantity'
+      }}
     }
 
     const cart = await Cart.findOneAndUpdate(
@@ -159,17 +188,30 @@ const updateCart = async function (req) {
     );
 
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found for the user or product not found in cart' });
+      return {code: 400, result:{
+        success: false,
+        error: 'Cart not found for the user or product not found in cart'
+      }}
     }
 
     // Update subTotal after updating quantity (optional)
     cart.subTotal = cart.items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
     await cart.save(); // Persist the updated subTotal (if needed)
 
-    return res.status(200).json({ message: 'Cart item updated successfully', cart }); // Send updated cart (optional)
+    return {code: 200, result:{
+      success: true,
+      result: cart,
+      message: 'Cart item updated successfully'
+    }}
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error updating cart item quantity' });
+    return {
+      code: 400, 
+      result:{
+        success: false,
+        error: error
+      }
+    }
   }
 };
 

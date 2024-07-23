@@ -55,7 +55,7 @@ const createUser = async function (body) {
         const token = new User(result).generateToken()
         return { code: 200, result:{
             success: true,
-            user:result,
+            result:result,
             token:token
         } }
     } catch (error) {
@@ -69,15 +69,15 @@ const createUser = async function (body) {
 const loginUser = async function (body) {
     const { email, password } = body
     const user = await User.findUserDetails({ email })
-    if (!user) return { code: 400, result: {success: false, message: "user not found"} }
+    if (!user) return { code: 400, result: {success: false, error: "user not found"} }
     const login = await bcrypt.compare(password, user.password)
-    if (!login) return { code: 400, result: {success: false, message: "eamil id or password can't match"} }
+    if (!login) return { code: 400, result: {success: false, error: "eamil id or password can't match"} }
     const token = new User(user).generateToken()
     return { code: 200, result : {
         success: true,
-        user: user,
+        result: user,
         token: token
-    }}
+    }}``
 }
 
 

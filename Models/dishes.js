@@ -95,7 +95,7 @@ const getdishes = async function (id) {
       if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
         return { code: 400, result: {
           success: false,
-          message:'Invalid restaurant ID'
+          error:'Invalid restaurant ID'
         } }
       }
 
@@ -104,7 +104,7 @@ const getdishes = async function (id) {
       if (!dishes.length) {
         return { code: 200, result:{
            success: false,
-            message: 'No dishes found for this restaurant'
+           error: 'No dishes found for this restaurant'
         }}
       }
 
@@ -169,7 +169,7 @@ const updatedishes = async function (req) {
     if (!mongoose.Types.ObjectId.isValid(dishId)) {
       return {code:200, result:{
         success: false,
-        message: 'Invalid dish ID'
+        error: 'Invalid dish ID'
       } }
     }
 
@@ -182,7 +182,7 @@ const updatedishes = async function (req) {
     if (!updatedDish) {
       return {code:404, result:{
         success: false,
-        message: 'Dish not found'
+        error: 'Dish not found'
       }}
     }
 

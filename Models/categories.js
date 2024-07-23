@@ -37,14 +37,14 @@ const deleteCategories = async function (_id) {
     try {
       // Validate ID (optional but recommended)
       if (!mongoose.Types.ObjectId.isValid(_id)) {
-        return {code:200, result :'Invalid category ID'}
+        return {code:200, result :{success: false, error: 'Invalid category ID'}}
 
       }
   
       const deletedCategory = await Categories.findByIdAndDelete(_id);
   
       if (!deletedCategory) {
-        return {code:400, result: {sucess:true, message:"category not found" }}
+        return {code:400, result: {sucess:true, error:"category not found" }}
       }
   
       // Handle dependent documents (optional)
