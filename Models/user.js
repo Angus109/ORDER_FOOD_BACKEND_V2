@@ -77,7 +77,7 @@ const loginUser = async function (body) {
         success: true,
         result: user,
         token: token
-    }}``
+    }}
 }
 
 
