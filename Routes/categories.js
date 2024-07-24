@@ -39,11 +39,19 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
         return res.status(400).send({succes: false, error: "category image is required "})
   
      }
+
+
+     if (!req.body.name){
+        return res.status(400).send({succes:false, error: "name is a required field!" })
+    }
+    if (!req.files) {
+        return res.status(400).send({succes: false, error: "image is a required field!" })
+    }
   
      //POSTING Dish image
      const cloudinaryResponseForCategory = await cloudinary.uploader.upload(
-        avatar.tempFilePath,
-        { folder: "ORDER FOOD CATEGORIES" }
+        req.files.image.tempFilePath,
+        {folder: "ORDER FOOD CATEGORIES" }
      );
      if (!cloudinaryResponseForCategory || cloudinaryResponseForCategory.error) {
         console.error(
@@ -59,12 +67,7 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
 
 
 
-    if (!req.body.name){
-        return res.status(400).send({succes:false, error: "name is a required field!" })
-    }
-    if (!req.file) {
-        return res.status(400).send({succes: false, error: "image is a required field!" })
-    }
+
 
     const { result, code } = await createcategories(req, cloudinaryResponseForCategory)
     res.status(code).send(result)
