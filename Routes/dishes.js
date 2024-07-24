@@ -58,9 +58,26 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
 
    }
 
+   if (!name) {
+      return res.status(400).send({success: false, error: "name is a required field!" })
+   }
+   if (!price) {
+      return res.status(400).send({success: false, error: "price is a required field!" })
+   }
+   if (!description) {
+      return res.status(400).send({success: false, error: "description is a required field!" })
+   }
+   if (!req.file) {
+      return res.status(400).send({success: false, error: "image is a required field!" })
+   }
+
+   if (!parentId || !categoryId) {
+      return res.status(400).send({ error: "parentId and categoryId is a required field!" })
+   }
+
    //POSTING Dish image
    const cloudinaryResponseForDish = await cloudinary.uploader.upload(
-      avatar.tempFilePath,
+      req.files.image.tempFilePath,
       { folder: "ORDER FOOD DISH" }
    );
    if (!cloudinaryResponseForDish || cloudinaryResponseForDish.error) {
@@ -78,22 +95,7 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
 
 
 
-   if (!name) {
-      return res.status(400).send({success: false, error: "name is a required field!" })
-   }
-   if (!price) {
-      return res.status(400).send({success: false, error: "price is a required field!" })
-   }
-   if (!description) {
-      return res.status(400).send({success: false, error: "description is a required field!" })
-   }
-   if (!req.file) {
-      return res.status(400).send({success: false, error: "image is a required field!" })
-   }
-
-   if (!parentId || !categoryId) {
-      return res.status(400).send({ error: "parentId and categoryId is a required field!" })
-   }
+ 
 
    const { code, result } = await createdish(req, cloudinaryResponseForDish)
    res.status(code).send(result)
