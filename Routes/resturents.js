@@ -35,30 +35,9 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
         return res.status(400).send({success: false, error: "Dish image is required "})
   
      }
-  
-     //POSTING Dish image
-     const cloudinaryResponseForRestaurants = await cloudinary.uploader.upload(
-        avatar.tempFilePath,
-        { folder: "ORDER FOOD RRESTAURANTS" }
-     );
-     if (!cloudinaryResponseForRestaurants || cloudinaryResponseForRestaurants.error) {
-        console.error(
-           "Cloudinary Error:",
-           cloudinaryResponseForRestaurants.error || "Unknown Cloudinary error"
-        );
-        return res.status(500).send({ success: false, error: "Failed to upload avatar to Cloudinary"})
-     }
-  
-     if(cloudinaryResponseForDish){
-        console.log(cloudinaryResponseForDish)
-       }
-  
-  
 
 
-
-
-    if (!name || !address){
+     if (!name || !address){
         return  res.status(400).send({success: false, error: "restauarant name and address required!" })
     }
 
@@ -78,6 +57,30 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
         return res.status(400).send({success: false, error: "description is required"})
     }
 
+  
+     //POSTING Dish image
+     const cloudinaryResponseForRestaurants = await cloudinary.uploader.upload(
+        req.files.image.tempFilePath,
+        { folder: "ORDER FOOD RRESTAURANTS" }
+     );
+     if (!cloudinaryResponseForRestaurants || cloudinaryResponseForRestaurants.error) {
+        console.error(
+           "Cloudinary Error:",
+           cloudinaryResponseForRestaurants.error || "Unknown Cloudinary error"
+        );
+        return res.status(500).send({ success: false, error: "Failed to upload avatar to Cloudinary"})
+     }
+  
+     if(cloudinaryResponseForDish){
+        console.log(cloudinaryResponseForDish)
+       }
+  
+  
+
+
+
+
+    
         const { result, code } = await createresturent(req, cloudinaryResponseForRestaurants)
         res.status(code).send(result)
     
