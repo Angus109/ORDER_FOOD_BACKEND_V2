@@ -71,10 +71,6 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
         return res.status(500).send({ success: false, error: "Failed to upload avatar to Cloudinary"})
      }
   
-     if(cloudinaryResponseForDish){
-        console.log(cloudinaryResponseForDish)
-       }
-  
   
 
 
