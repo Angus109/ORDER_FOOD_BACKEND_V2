@@ -14,21 +14,21 @@ const cloudinary = require("cloudinary")
 
 
 router.get('/', authorization, asyncMiddleware(async function (req, res) {
-    const result = await getcategoriess()
-    res.status(200).send(result)
+    const {result, code} = await getcategoriess()
+    res.status(code).send(result)
 }))
 
 router.delete('/:_id', authorization, asyncMiddleware(async function (req, res) {
     if (!req.params._id){
-        return res.status(404).send({error :'category _id is a required field'})
+        return res.status(400).send({ succes:false, error :'category _id is a required field'})
     }
 
     if (req.params._id){
         console.log({result : req.params._id})
     }
     
-    const result = await deleteCategories(req.params._id)
-    res.status(200).send(result)
+    const {result, code} = await deleteCategories(req.params._id)
+    res.status(code).send(result)
 }))
 
 
@@ -36,7 +36,7 @@ router.delete('/:_id', authorization, asyncMiddleware(async function (req, res) 
 router.post('/', authorization, asyncMiddleware(async function (req, res) {
 
     if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send({error: "category image is required "})
+        return res.status(400).send({succes: false, error: "category image is required "})
   
      }
   
@@ -50,7 +50,7 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
            "Cloudinary Error:",
            cloudinaryResponseForCategory.error || "Unknown Cloudinary error"
         );
-        return res.status(500).send({error: "Failed to upload category to Cloudinary"})
+        return res.status(500).send({success: false, error: "Failed to upload category to Cloudinary"})
      }
   
      if(cloudinaryResponseForCategory){
@@ -60,14 +60,14 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
 
 
     if (!req.body.name){
-        return res.status(400).send({ error: "name is a required field!" })
+        return res.status(400).send({succes:false, error: "name is a required field!" })
     }
     if (!req.file) {
-        return res.status(400).send({ error: "image is a required field!" })
+        return res.status(400).send({succes: false, error: "image is a required field!" })
     }
 
-    const { result } = await createcategories(req, cloudinaryResponseForCategory)
-    res.status(200).send(result)
+    const { result, code } = await createcategories(req, cloudinaryResponseForCategory)
+    res.status(code).send(result)
 
 }
 ))

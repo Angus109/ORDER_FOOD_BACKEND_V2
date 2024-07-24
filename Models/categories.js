@@ -25,8 +25,18 @@ const categoriesSchema = new mongoose.Schema({
 const Categories = mongoose.model("Categories", categoriesSchema)
 
 const getcategoriess = async function () {
+   try{
     const result = await Categories.find({})
     return {code: 200, result: {sucess: true, result:result}}
+   }catch(error){
+    return {
+      code: 500,
+      result: {
+        sucess: false,
+        error: error
+      }
+    }
+   }
 }
 
 
@@ -37,25 +47,24 @@ const deleteCategories = async function (_id) {
     try {
       // Validate ID (optional but recommended)
       if (!mongoose.Types.ObjectId.isValid(_id)) {
-        return {code:200, result :{success: false, error: 'Invalid category ID'}}
+        return {code:404, result :{success: false, error: 'Invalid category ID'}}
 
       }
   
       const deletedCategory = await Categories.findByIdAndDelete(_id);
   
       if (!deletedCategory) {
-        return {code:400, result: {sucess:true, error:"category not found" }}
+        return {code:404, result: {sucess:true, error:"category not found" }}
       }
   
       // Handle dependent documents (optional)
       // If your categories have dependent documents (e.g., products), 
       // you might need additional logic here to handle them before deletion.
   
-      return {code:200, result:{success:true, message: 'Category deleted successfully'}}
+      return {code:200, result:{success:true, message: 'Category deleted successfully', result: deletedCategory}}
      
 
     } catch (error) {
-      console.error(error);
       return {code:500 , result:{
         success: false,
         error: error
@@ -81,7 +90,7 @@ const createcategoriess = async function (req, cloudinaryResponseForCategory) {
           result: response
         }}
     } catch (error) {
-        return {code: 400, result: {
+        return {code: 500, result: {
           success : false,
           error: error
         }}

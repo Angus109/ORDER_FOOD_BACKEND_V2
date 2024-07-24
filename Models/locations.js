@@ -10,7 +10,7 @@ const locationSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    zone : {
+    zone: {
         type: String,
         required: true
     }
@@ -19,31 +19,47 @@ const locationSchema = new mongoose.Schema({
 const Locations = mongoose.model("Locations", locationSchema)
 
 const getLocation = async function () {
-    const result = await Locations.find({})
-    return {code:200, result: {
-        success: true,
-        result: result
-    }}
+    try {
+        const result = await Locations.find({})
+        return {
+            code: 200, result: {
+                success: true,
+                result: result
+            }
+        }
+    } catch (error) {
+        return {
+            code: 500,
+            result: {
+                success: false,
+                error: error
+            }
+        }
+    }
 }
 
 const createlocations = async function (body) {
 
 
     try {
-        let location = new Locations(body); 
+        let location = new Locations(body);
         const response = await location.save()
-        return {code: 200, result: {
-            success: true,
-            result: response
-        }}
+        return {
+            code: 200, result: {
+                success: true,
+                result: response
+            }
+        }
     } catch (error) {
-        return {code: 400, result: {
-            success: false,
-            error: error
-        }}
+        return {
+            code: 500, result: {
+                success: false,
+                error: error
+            }
+        }
     }
 }
 
-module.exports.getLocation = getLocation 
-module.exports.createlocation = createlocations 
+module.exports.getLocation = getLocation
+module.exports.createlocation = createlocations
 module.exports.Locations = Locations

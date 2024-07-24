@@ -51,34 +51,57 @@ const resturentSchema = new mongoose.Schema({
 
 const Resturent = mongoose.model("Resturent", resturentSchema)
 
-const getresturents = async function (search) {
-    if (search) {
-        console.log(search)
-        const response = await Resturent.find().populate({
-            path: 'categories',
-            populate: {
-                path: 'category'
-            }
-        }).populate({
-            path: 'location',
-            populate: {
-                path: 'city'
-            }
-        })
-        return {code: 200, result:{
+
+const getallrestaurants = async function (res) {
+    try{
+        const response = await Resturent.find({})
+    return {
+        code: 200, result: {
             success: true,
             result: response
-        } }
-
-    } else {
-        const response = await Resturent.find({})
+        }
+    }
+    }catch(error){
         return {
-            code: 200, result: {
-                success: true,
-                result: response
+            code:500,
+            result:{
+                success: false,
+                error: error
             }
         }
     }
+}
+
+const getresturents = async function (search) {
+
+   try{
+    const response = await Resturent.find().populate({
+        path: 'categories',
+        populate: {
+            path: 'category'
+        }
+    }).populate({
+        path: 'location',
+        populate: {
+            path: 'city'
+        }
+    })
+    return {
+        code: 200, result: {
+            success: true,
+            result: response
+        }
+    }
+
+   }catch(error){
+    return {
+        code:500,
+        result:{
+            success:false,
+            error: error
+        }
+    }
+   }
 
 }
 
@@ -111,7 +134,7 @@ const createresturents = async function (req, cloudinaryResponseForRestaurants) 
         }
     } catch (error) {
         return {
-            code: 400, result: {
+            code: 500, result: {
                 success: false,
                 error: error
             }
@@ -122,4 +145,5 @@ const createresturents = async function (req, cloudinaryResponseForRestaurants) 
 
 
 module.exports.createresturent = createresturents
-module.exports.getresturents = getresturents 
+module.exports.getresturents = getresturents
+module.exports.getallrestaurants = getallrestaurants

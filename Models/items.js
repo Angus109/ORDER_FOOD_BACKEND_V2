@@ -20,7 +20,7 @@ const createItems = async function (body) {
             result: response
         }}
     } catch (error) {
-        return {code: 400, result: {
+        return {code: 500, result: {
             success: false,
             error: error
         }}

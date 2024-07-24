@@ -19,7 +19,7 @@ let ItemSchema = new Schema({
     required: true
   },
   total: {
-    default:0, 
+    default: 0,
     type: Number,
   }
 }, {
@@ -44,7 +44,7 @@ const CartSchema = new Schema({
 
 
 // Pre-save middleware to calculate subTotal
-CartSchema.pre('save', async function(next) {
+CartSchema.pre('save', async function (next) {
   this.subTotal = 0;
   for (const item of this.items) {
     await item.save(); // Ensure item totals are calculated first
@@ -55,7 +55,7 @@ CartSchema.pre('save', async function(next) {
 
 
 
-ItemSchema.pre('save', function(next) {
+ItemSchema.pre('save', function (next) {
   this.total = this.quantity * this.price;
   next();
 });
@@ -74,18 +74,28 @@ module.exports = ItemSchema;
 const Cart = mongoose.model('Cart', CartSchema);
 
 const getcart = async function (id) {
+  try {
+    const result = await Cart.find().find({
+      user: id,
+    })
+    return {
+      code: 200,
+      result: {
+        success: true,
+        result: result,
 
-  const result = await Cart.find().find({
-    user: id,
-  })
-  return {
-    code:200,
-    result:{
-      success:true,
-      result: result,
-      
+      }
+    }
+  } catch (error) {
+    return {
+      code: 500,
+      result: {
+        success: false,
+        error: error
+      }
     }
   }
+
 }
 
 const createCart = async function (body) {
@@ -103,16 +113,20 @@ const createCart = async function (body) {
     });
 
     const response = await cart.save()
+    return {
+      code: 200, result: {
+      success: true,
+      result: response
 
-
-
-
-    return { code: 200, result: response }
+      }
+    }
   } catch (error) {
-    return { code: 400, result: {
-      success:false,
-      error: error
-    }}
+    return {
+      code: 500, result: {
+        success: false,
+        error: error
+      }
+    }
 
   }
 }
@@ -124,10 +138,11 @@ const removeCart = async function (req) {
 
     // Validate user ID and product ID (optional but recommended)
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
-      return {code:200,
-        result:{
-          success:false,
-          error: error
+      return {
+        code: 404,
+        result: {
+          success: false,
+          error: "Inavalid cart ID"
         }
       }
     }
@@ -139,28 +154,34 @@ const removeCart = async function (req) {
     );
 
     if (!cart) {
-      return {code:404, result:{
-        success:false,
-        error:'Cart not found for the user'
-      }}
+      return {
+        code: 404, result: {
+          success: false,
+          error: 'Cart not found for the user'
+        }
+      }
     }
 
     // Update subTotal after removing item (optional)
     cart.subTotal = cart.items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
     await cart.save(); // Persist the updated subTotal (if needed)
 
-    return {code:200, result:{
-      success:true,
-      message: 'Item removed from cart successfully',
-      result: cart,
-      
-    }}
+    return {
+      code: 200, result: {
+        success: true,
+        message: 'Item removed from cart successfully',
+        result: cart,
+
+      }
+    }
   } catch (error) {
     console.error(error);
-    return {code:400, result:{
-      success: false,
-      error: error
-    }}
+    return {
+      code: 500, result: {
+        success: false,
+        error: error
+      }
+    }
   }
 };
 
@@ -173,10 +194,12 @@ const updateCart = async function (req) {
 
     // Validate user ID, product ID, and quantity (optional but recommended)
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId) || quantity < 0) {
-      return {code:400, result:{
-        success: false,
-        error: 'Invalid user ID, product ID, or quantity'
-      }}
+      return {
+        code: 404, result: {
+          success: false,
+          error: 'Invalid user ID, product ID, or quantity'
+        }
+      }
     }
 
     const cart = await Cart.findOneAndUpdate(
@@ -188,26 +211,29 @@ const updateCart = async function (req) {
     );
 
     if (!cart) {
-      return {code: 400, result:{
-        success: false,
-        error: 'Cart not found for the user or product not found in cart'
-      }}
+      return {
+        code: 404, result: {
+          success: false,
+          error: 'Cart not found for the user or product not found in cart'
+        }
+      }
     }
 
     // Update subTotal after updating quantity (optional)
     cart.subTotal = cart.items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
     await cart.save(); // Persist the updated subTotal (if needed)
 
-    return {code: 200, result:{
-      success: true,
-      result: cart,
-      message: 'Cart item updated successfully'
-    }}
-  } catch (error) {
-    console.error(error);
     return {
-      code: 400, 
-      result:{
+      code: 200, result: {
+        success: true,
+        result: cart,
+        message: 'Cart item updated successfully'
+      }
+    }
+  } catch (error) {
+    return {
+      code: 500,
+      result: {
         success: false,
         error: error
       }

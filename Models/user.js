@@ -59,7 +59,7 @@ const createUser = async function (body) {
             token:token
         } }
     } catch (error) {
-        return { code: 400, result: {
+        return { code: 500, result: {
             success : false,
             error: error
         } }
@@ -67,7 +67,8 @@ const createUser = async function (body) {
 }
 
 const loginUser = async function (body) {
-    const { email, password } = body
+    try{
+        const { email, password } = body
     const user = await User.findUserDetails({ email })
     if (!user) return { code: 400, result: {success: false, error: "user not found"} }
     const login = await bcrypt.compare(password, user.password)
@@ -78,6 +79,15 @@ const loginUser = async function (body) {
         result: user,
         token: token
     }}
+    }catch(error){
+        return {
+            code:500, 
+            result:{
+                success: false,
+                error: error
+            }
+        }
+    }
 }
 
 

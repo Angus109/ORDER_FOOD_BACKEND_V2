@@ -24,9 +24,9 @@ const stripe = new Stripe(STRIPE_SECRET_KEY)
 
 
 // placing user order from frontend
-const placeOrder = async (req,res) => {
+const placeOrder = async (req) => {
 
-    const frontend_url = "http://localhost:5173";
+    const frontend_url = process.env.FRONTEND_URL || "http://localhost:5173";
 
     try {
         const newOrder = new OrderModel({
@@ -67,63 +67,133 @@ const placeOrder = async (req,res) => {
             cancel_url:`${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
         })
 
-        res.json({success:true,session_url:session.url})
+        return {
+            code:200,
+            result: {
+                success: true,
+                result:session.url
+            }
+        }
 
     } catch (error) {
         console.log(error);
-        res.json({success:false,message:"Error"})
+        return{
+            code:500,
+            result: {
+                success: false,
+                error: error
+            }
+        }
     }   
 }
 
-const verifyOrder = async (req,res) => {
+const verifyOrder = async (req) => {
     const {orderId,success} = req.body;
     try {
         if (success=="true") {
-            await OrderModel.findByIdAndUpdate(orderId,{payment:true});
-            res.json({success:true,message:"Paid"})
+           const response = await OrderModel.findByIdAndUpdate(orderId,{payment:true});
+            return {
+                code: 200,
+                result:{
+                    success:true,
+                    message:"Paid",
+                    result : response
+                }
+            }
         }
         else{
-            await OrderModel.findByIdAndDelete(orderId);
-            res.json({success:false,message:"Not Paid"})
+            const response = await OrderModel.findByIdAndDelete(orderId);
+            return {
+                code: 200,
+                result: {
+                    success: true,
+                    message:"Not Paid",
+                    result : response
+                }
+            }
         }
     } catch (error) {
         console.log(error);
-        res.json({success:false,message:"Error"})
+        return{
+            code:500,
+            result: {
+                success: false,
+                error: error
+            }
+        }
     }
 }
 
 
 // user orders for frontend
 
-const userOrders = async (req,res) => {
+const userOrders = async (req) => {
     try {
         const orders = await OrderModel.find({userId:req.body.userId});
-        res.json({success:true,data:orders})
+        return {
+            code:200,
+            result:{
+                success: true,
+                result: orders
+            }
+        }
     } catch (error) {
         console.log(error);
-        res.json({success:false,message:"Error"})
+        return {
+            code: 500,
+            result: {
+                success: false,
+                error: error
+            }
+        }
     }
 }
 
 // Listing orders for admin panel
-const listOrders = async (req,res) => {
+const listOrders = async () => {
     try {
         const orders = await OrderModel.find({});
-        res.json({success:true,data:orders})
+        return {
+            code:200,
+            result:{
+                success:true,
+                result: orders
+            }
+            
+        }
     } catch (error) {
         console.log(error);
-        res.json({success:false,message:"Error"})
+       return{
+        code:500,
+        result:{
+            success:false,
+            error: error
+        }
+       }
     }
 }
 
 // api for updating order status
-const updateStatus = async (req,res) => {
+const updateStatus = async (req) => {
     try {
-        await OrderModel.findByIdAndUpdate(req.body.orderId,{status:req.body.status});
-        res.json({success:true,message:"Status Updated"})
+        const response = await OrderModel.findByIdAndUpdate(req.body.orderId,{status:req.body.status});
+        return {
+            code: 200,
+            result: {
+                success: true,
+                message:"Status Updated",
+                result: response
+            }
+        }
     } catch (error) {
         console.log(error);
-        res.json({success:false,message:"Error"})
+        return {
+            code: 500,
+            result:{
+                success: false,
+                error:error
+            }
+        }
     }
 }
 

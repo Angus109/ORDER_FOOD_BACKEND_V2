@@ -11,5 +11,5 @@ module.exports = async function auth(req, res, next) {
         // console.log(user)
         req.user = await User.findById(user._id)
         next()
-    } catch (error) {res.send({success: false, error: error})}
+    } catch (error) {res.status(500).send({success: false, error: error})}
 }
