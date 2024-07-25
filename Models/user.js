@@ -7,7 +7,9 @@ const JWT_SECRET_KEY = process.env.JWT_TOKEN;
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String
+        type: String,
+        unique: true,
+        required: true
     },
     email: {
         type: String,
