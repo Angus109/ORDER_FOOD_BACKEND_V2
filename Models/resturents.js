@@ -9,10 +9,10 @@ const resturentSchema = new mongoose.Schema({
     categories: {
         type: [new mongoose.Schema({
             rating: { type: Number },
-            category: {
+            category: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Categories"
-            }
+            }]
         })],
         minLength: 1,
     },
@@ -29,7 +29,7 @@ const resturentSchema = new mongoose.Schema({
     location: {
         type: new mongoose.Schema({
             address: String,
-            city:
+            zoneId:
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Locations"
@@ -119,7 +119,7 @@ const createresturents = async function (req, cloudinaryResponseForRestaurants) 
             },
             location: {
                 address: req.body.address || "",
-                city: req.body.cityId || "",
+                zoneId: req.body.zoneId || "",
                 lat: req.body.lat || "",
                 lon: req.body.lon || ""
             },
