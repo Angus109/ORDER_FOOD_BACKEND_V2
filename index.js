@@ -34,6 +34,7 @@ const categories = require("./Routes/categories")
 const resturents = require("./Routes/resturents")
 const dishes = require("./Routes/dishes")
 const cart = require("./Routes/cart")
+const reviews = require("./Routes/reviews")
 
 
 app.use(`/api/v1/items`, items)
@@ -43,6 +44,7 @@ app.use(`/api/v1/categories`, categories)
 app.use(`/api/v1/resturents`, resturents)
 app.use(`/api/v1/dishes`, dishes)
 app.use(`/api/v1/cart`, cart)
+app.use(`/api/v1/reviews`, reviews)
 app.use(error)
 
 require("./startup/db")()
