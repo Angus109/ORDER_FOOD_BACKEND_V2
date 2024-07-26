@@ -29,20 +29,28 @@ router.get('/all' , authorization,  asyncMiddleware(async function (req, res) {
 
 
 router.post('/', authorization, asyncMiddleware(async function (req, res) {
-    const {name , categoryId, cityId, address, lat, lon, description}= req.body
+    const {name , categoryId, zoneId, address, lat, lon, description, ownerId, minTime, maxTime}= req.body
 
     if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send({success: false, error: "Dish image is required "})
+        return res.status(400).send({success: false, error: "Restaurant image is required "})
   
      }
+
+     if (!ownerId){
+        return  res.status(400).send({success: false, error: "ownerId is required!" })
+    }
 
 
      if (!name || !address){
         return  res.status(400).send({success: false, error: "restauarant name and address required!" })
     }
 
-     if(!cityId){
-        return res.status(400).send({success: false, error: "cityId is required!" })
+    if (!minTime || !maxTime){
+        return  res.status(400).send({success: false, error: "minTIme and MaxTime is  required!" })
+    }
+
+     if(!zoneId){
+        return res.status(400).send({success: false, error: "zOneId is required!" })
     }
 
     if(!lat || !lon) {
@@ -71,11 +79,6 @@ router.post('/', authorization, asyncMiddleware(async function (req, res) {
         return res.status(500).send({ success: false, error: "Failed to upload avatar to Cloudinary"})
      }
   
-  
-
-
-
-
     
         const { result, code } = await createresturent(req, cloudinaryResponseForRestaurants)
         res.status(code).send(result)
